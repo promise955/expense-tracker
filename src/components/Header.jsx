@@ -15,7 +15,7 @@ const Header = () => {
     </div>
     <div className="relative w-2/3 h-80">
       <Image
-        src={`${window.location.origin}/expense.svg`}
+        src={`/expense.svg`}
         alt="Expense Tracker"
         layout="fill"
         objectFit="contain"
