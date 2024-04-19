@@ -29,8 +29,8 @@ const Login = () => {
 
       setUser(email);
 
-      setSubmitting(false);
       router.push("/dashboard");
+      setSubmitting(false);
     } catch (error) {
       setSubmitting(false);
 
