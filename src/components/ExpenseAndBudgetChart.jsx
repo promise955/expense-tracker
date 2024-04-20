@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useTransition } from "react";
-import { toast } from "sonner";
 import {
   Chart as ChartJS,
   LinearScale,

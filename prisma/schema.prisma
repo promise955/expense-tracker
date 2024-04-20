@@ -32,6 +32,4 @@ model Expense {
   date             DateTime
   budgetCategoryId String         @db.ObjectId
   budgetCategory   BudgetCategory @relation(fields: [budgetCategoryId], references: [id])
-  user             User?          @relation(fields: [userId], references: [id])
-  userId           String?
 }
