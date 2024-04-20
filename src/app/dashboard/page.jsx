@@ -53,8 +53,9 @@ const Dashboard = () => {
   }, [isUser, setUser, router]);
 
   return (
+    <>
+    <NavBar/>
     <main className="min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
-      <NavBar />
       {loading ? (
         <div className="flex flex-col items-center justify-center flex-grow">
           <div className="flex flex-col items-center justify-center flex-grow">
@@ -173,6 +174,7 @@ const Dashboard = () => {
         </div>
       )}
     </main>
+    </>
   );
 };
 

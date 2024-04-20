@@ -40,34 +40,35 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-purple-600 to-indigo-600">
+    <div className="flex justify-center  text-gray-800 items-center h-screen bg-gradient-to-r from-purple-600 to-indigo-600">
       <Link
         href="/"
-        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
+        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-white bg-btn-background hover:bg-btn-background-hover flex items-center group text-lg"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>{" "}
+       <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  className="mr-2 h-6 w-6 transition-transform group-hover:-translate-x-1 text-white"
+>
+  <polyline points="15 18 9 12 15 6" />
+</svg>{" "}
+
         Home
       </Link>
-      <div className="max-w-md w-full p-4 bg-white rounded-lg shadow-lg sm:max-w-md sm:p-8">
+      <div className="max-w-md w-full p-4 bg-white m-4 rounded-lg shadow-lg sm:max-w-md sm:p-8">
         <Image
           src="/expense.svg"
           alt="Login"
           className="h-50 mx-auto mb-8"
-          width={100}
-          height={100}
+          height={50}
+          width={50}
         />
         <Formik
           initialValues={initialValues}

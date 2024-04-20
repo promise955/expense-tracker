@@ -1,5 +1,5 @@
 
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/utils/supabase/server'
 import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
@@ -8,13 +8,13 @@ export async function POST(request, response) {
     try {
         const supabase = createClient()
 
-        const { email, password } = await request.body
+        const { email, password } = await request.json()
 
         const { error, data: { user } } = await supabase.auth.signUp({
             email: email, password: password,
 
             options: {
-                emailRedirectTo: 'https://expense-tracker-orpin-eight-21.vercel.app/error',
+                emailRedirectTo: 'https://expense-tracker-orpin-eight-21.vercel.app/dashboard',
             },
         })
 
@@ -26,7 +26,7 @@ export async function POST(request, response) {
             }
         })
 
-        return new NextResponse(JSON.stringify({ message:  'Registration Successful' }), { status: 400 })
+        return new NextResponse(JSON.stringify({ message:  'Registration Successful' }), { status: 200 })
 
 
     } catch (error) {

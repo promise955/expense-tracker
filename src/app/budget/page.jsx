@@ -50,8 +50,9 @@ const BudgetCategory = () => {
   }, [isUser, setUser, router]);
 
   return (
-    <div className="w-full px-6 py-6 mx-auto min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
+  <>
       <NavBar />
+    <div className="w-full px-6 py-6 mx-auto min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
       <div className="flex justify-start">
         <div className="w-full">
           <div className="flex justify-between mb-8">
@@ -120,6 +121,7 @@ const BudgetCategory = () => {
       )}
       {editModal && <EditBudgetModal onClose={() => setEditModal(false)} />}
     </div>
+    </>
   );
 };
 
