@@ -29,8 +29,7 @@ const Login = () => {
       const { email } = await DataService.postDataNoAuth("/login/api", values);
 
       setUser(email);
-
-      setSubmitting(false);
+;
       router.push("/dashboard");
       setSubmitting(false);
     } catch (error) {

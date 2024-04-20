@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useTransition } from "react";
+import {toast} from 'sonner'
 import {
   Chart as ChartJS,
   LinearScale,
@@ -13,7 +14,7 @@ import {
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import DataService from "@/lib/fetch";
-import prisma from "@/lib/prisma";
+
 
 const ExpenseAndBudgetChart = () => {
   ChartJS.register(
