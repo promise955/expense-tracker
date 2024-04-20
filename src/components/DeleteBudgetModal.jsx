@@ -10,7 +10,7 @@ const DeleteBudgetModal = ({ budget, onClose }) => {
        const response =  await DataService.deleteDataNoAuth(`/budget/api?id=${budget.id}&user=${budget.userId}`)
       toast.success(response);
       onClose()
-       router.push('/budget')
+     router.refresh()
     } catch (error) {
       toast.error(error);
     }

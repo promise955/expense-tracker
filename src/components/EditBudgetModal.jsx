@@ -6,35 +6,34 @@ import ReactDatePicker from "react-datepicker";
 import DataService from "@/lib/fetch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import dayjs from 'dayjs';
-// import DateTimePicker from 'react-datetime-picker/dist/entry.nostyle';
-// import 'react-calendar/dist/Calendar.css';
-//  import 'react-clock/dist/Clock.css';
-//   import 'react-datetime-picker/dist/DateTimePicker.css';
+import dayjs from "dayjs";
+import { dateFormatter } from "@/utils/functions/utils";
+
 
 const EditBudgetModal = ({ updatedBudget, onClose }) => {
-
-const router = useRouter()
+  const router = useRouter();
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
-  
       if (updatedBudget) {
-       const  response = await DataService.patchDataNoAuth(
+        const response = await DataService.patchDataNoAuth(
           "/budget/api",
-           values
+          values
         );
-        toast.success(response.message);
+        toast.success(response);
         setSubmitting(false);
         onClose();
-         router.push("/budget");
+        router.refresh();
       } else {
-        const response = await DataService.postDataNoAuth("/budget/api", values);
-        toast.success(response.message);
+        const response = await DataService.postDataNoAuth(
+          "/budget/api",
+          values
+        );
+        toast.success(response);
         setSubmitting(false);
         onClose();
-         router.push("/budget");
+        router.refresh();
       }
     } catch (error) {
       toast.error(error);
@@ -141,8 +140,7 @@ const router = useRouter()
                           ? "border-red-500"
                           : ""
                       }`}
-                      selected={ values.monthyear}
-
+                      selected={values.monthyear}
                       onChange={(value) => {
                         setFieldValue("monthyear", value);
                       }}

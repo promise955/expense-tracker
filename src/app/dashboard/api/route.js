@@ -1,25 +1,22 @@
-import { createClient } from "@/utils/supabase/server";
 import prisma from "@/lib/prisma";
 import { NextResponse } from 'next/server'
+import { readUserSession } from "@/lib/action";
 
-export async function GET(request) {
+export async function GET(request, response) {
 
-    const url =  new URL(request.url)
 
+    const { user, error } = await readUserSession()
+
+    if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
+
+    const url = new URL(request.url)
     const searchParams = url.searchParams;
-
     const report = searchParams.get('getReport');
 
-
-    if(report){
+    if (report) {
 
         try {
 
-            const supabase = createClient()
-            const { error, data: { user } } = await supabase.auth.getUser()
-    
-            if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
-    
             const { id } = await prisma.user.findFirst({
                 where: {
                     email: user.email
@@ -29,23 +26,23 @@ export async function GET(request) {
                 }
             })
             if (!id) return new NextResponse(JSON.stringify({ message: "Invalid credentials or seesion expired" }), { status: 400 })
-    
-            const  userReport = await prisma.expense.findMany({
-                where: { 
-                    budgetCategory: { 
-                        userId: id 
-                    } 
+
+
+            const userReport = await prisma.expense.findMany({
+                where: {
+                    budgetCategory: {
+                        userId: id
+                    }
                 },
                 include: {
                     budgetCategory: true,
                 },
-           
-                orderBy: { date: 'asc' } 
+                orderBy: { date: 'asc' }
             });
-            
 
-          const   expensesGroupedByDate = userReport.reduce((acc, expense) => {
-                const date = expense.date.toISOString().split('T')[0]; // Extracting date part only
+
+            const expensesGroupedByDate = userReport.reduce((acc, expense) => {
+                const date = expense.date.toISOString().split('T')[0];
                 if (!acc[date]) {
                     acc[date] = [];
                 }
@@ -53,14 +50,45 @@ export async function GET(request) {
                 return acc;
             }, {});
 
+            const expensesGroupedName = userReport.reduce((acc, expense) => {
+                const budgetCategory  = expense.budgetCategory.categoryname;
+                acc[budgetCategory] = [...(acc[budgetCategory] || []), expense];
+                return acc;
+            }, {});
+
+  
+
+            const formattedBudgetPieChart = Object.keys(expensesGroupedName).map(budgetCategory => {
+                const budgetSum = expensesGroupedName[budgetCategory].reduce((sum, expense) => sum + expense.budgetCategory.budgetamount, 0);
+                return {
+                    budgetCategory: budgetCategory,
+                    //budgets: expensesGroupedByDate[budgetCategory].map(expense => expense.budgetCategory),
+                    budgetSum: budgetSum
+                };
+            });
 
             const formattedExpenses = Object.keys(expensesGroupedByDate).map(dateString => {
                 const date = new Date(dateString);
                 const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-                return { date: formattedDate, expenses: expensesGroupedByDate[dateString] };
-              });
-    
-            return new Response(JSON.stringify({ message: formattedExpenses}), {
+
+                const expensesSum = expensesGroupedByDate[dateString].reduce((sum, expense) => sum + expense.amount, 0);
+
+                const budgetSum = expensesGroupedByDate[dateString].reduce((sum, expense) => sum + expense.budgetCategory.budgetamount, 0);
+
+                return {
+                    date: formattedDate,
+                    expenses: expensesGroupedByDate[dateString].map(expense => expense.description),
+                    expensesSum: expensesSum,
+                    budgetSum: budgetSum
+                };
+            });
+            
+  
+            return new Response(JSON.stringify({
+                message: {
+                    formattedExpenses: formattedExpenses, formattedBudgetPieChart: formattedBudgetPieChart
+                }
+            }), {
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -72,16 +100,11 @@ export async function GET(request) {
         }
 
 
-    }else{
+    } else {
 
 
         try {
 
-            const supabase = createClient()
-            const { error, data: { user } } = await supabase.auth.getUser()
-    
-            if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
-    
             const { id } = await prisma.user.findFirst({
                 where: {
                     email: user.email
@@ -90,57 +113,66 @@ export async function GET(request) {
                     id: true
                 }
             })
+
             if (!id) return new NextResponse(JSON.stringify({ message: "Invalid credentials or seesion expired" }), { status: 400 })
-    
+
             const allUserBudget = await prisma.budgetCategory.findMany({
                 where: { userId: id },
                 select: {
-                    id: true
+                    id: true,
+                    budgetamount: true
                 }
-    
+
             })
-    
             const ids = allUserBudget.map((item) => item.id)
-    
+
             const expenses = await prisma.expense.findMany({
                 where: {
                     budgetCategoryId: {
                         in: ids
                     }
-                }
-    
+                },
+                orderBy: { date: 'asc' }
+
             })
-    
-            return new Response(JSON.stringify({ message: expenses }), {
+
+
+            const newexpenses = expenses.map((expense) => {
+                const budgetCategory = allUserBudget.find(item => item.id === expense.budgetCategoryId);
+                expense.budgetBalance = budgetCategory ? budgetCategory.budgetamount - expense.amount : 0;
+                expense.budgetAmount = budgetCategory ? budgetCategory.budgetamount : 0;
+
+                return expense
+
+            })
+
+
+            return new Response(JSON.stringify({ message: newexpenses }), {
                 headers: {
                     "Content-Type": "application/json"
                 },
                 status: 200
             })
         } catch (error) {
-            console.log(error);
+            console.log(error, 'error');
             return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
         }
-    
-    
+
+
 
     }
 
 
 
 
-   
+
 }
 
 export async function POST(request) {
 
     try {
-        const supabase = createClient()
-
+        const { user, error } = await readUserSession()
         const payload = await request.json()
-
-        const { error, data: { user } } = await supabase.auth.getUser()
-
 
         if (error) return new NextResponse(JSON.stringify({ message: "Invalid request" }), { status: 400 })
 

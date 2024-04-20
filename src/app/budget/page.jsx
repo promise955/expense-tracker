@@ -8,8 +8,7 @@ import EditBudgetModal from "@/components/EditBudgetModal";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/context";
 import DataService from "@/lib/fetch";
-import prisma from "@/lib/prisma";
-import { readUserSession } from "@/lib/session";
+import { readUserSession } from "@/lib/action";
 
 const BudgetCategory = () => {
   const router = useRouter();
@@ -40,7 +39,7 @@ const BudgetCategory = () => {
         const { user } = await readUserSession();
         if (user) {
           setUser(user.email);
-          router.push("/dashboard");
+          router.push("/budget");
         } else {
           router.push("/login");
         }
@@ -102,7 +101,7 @@ const BudgetCategory = () => {
           </div>
           <div className="relative w-2/3 h-80">
             <Image
-              src={`${window.location.origin}/expense.svg`}
+              src={`/expense.svg`}
               alt="Expense Tracker"
               layout="fill"
               objectFit="contain"

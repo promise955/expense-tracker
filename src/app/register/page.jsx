@@ -6,10 +6,10 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Link from "next/link";
 import DataService from "@/lib/fetch";
-
+import { useRouter } from "next/navigation";
 
 const Register = () => {
-
+const router = useRouter()
   const initialValues = {
     email: "",
     password: "",
@@ -27,10 +27,12 @@ const Register = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
-      const message = await DataService.postDataNoAuth("/api/register", values)
+      const message = await DataService.postDataNoAuth("/register/api", values)
+      router.push('/verifyEmail')
       setSubmitting(false);
       toast.success(message)
 
+    
     } catch (error) {
       setSubmitting(false);
       return toast.error(error);
@@ -59,9 +61,9 @@ const Register = () => {
         </svg>{" "}
         Home
       </Link>
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
+      <div className="max-w-md w-full p-4 bg-white rounded-lg shadow-lg sm:max-w-md sm:p-8">
         <Image
-          src="expense.svg"
+          src="/expense.svg"
           alt="Login"
           className="h-50 mx-auto mb-8"
           width={100}

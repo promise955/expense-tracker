@@ -9,6 +9,7 @@ import DataService from "@/lib/fetch";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/context/context";
 
+
 const Login = () => {
   const { setUser } = useAppContext();
 
@@ -25,12 +26,11 @@ const Login = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
-      const { email } = await DataService.postDataNoAuth("/api/login", values);
+      const { email } = await DataService.postDataNoAuth("/login/api", values);
 
       setUser(email);
-
-      setSubmitting(false);
       router.push("/dashboard");
+      setSubmitting(false);
     } catch (error) {
       setSubmitting(false);
 
@@ -60,9 +60,9 @@ const Login = () => {
         </svg>{" "}
         Home
       </Link>
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
+      <div className="max-w-md w-full p-4 bg-white rounded-lg shadow-lg sm:max-w-md sm:p-8">
         <Image
-          src="expense.svg"
+          src="/expense.svg"
           alt="Login"
           className="h-50 mx-auto mb-8"
           width={100}

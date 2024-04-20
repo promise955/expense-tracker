@@ -2,7 +2,7 @@
 import NavBar from "@/components/Nav";
 import React from "react";
 import { useAppContext } from "@/context/context";
-import { readUserSession } from "@/lib/session";
+import { readUserSession } from "@/lib/action";
 import { useTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Expense from "@/components/Expense";
@@ -10,6 +10,7 @@ import { currencyFormatter, dateFormatter } from "@/utils/functions/utils";
 import ExpenseAndBudgetChart from "@/components/ExpenseAndBudgetChart";
 import { toast } from "sonner";
 import DataService from "@/lib/fetch";
+import ExpensePieChart from "@/components/ExpensePiechart";
 
 const Dashboard = () => {
   const { isUser, setUser } = useAppContext();
@@ -84,20 +85,37 @@ const Dashboard = () => {
         <div>
           {/* start of chart */}
 
+    
           <div className="flex flex-wrap -mx-4">
-            <div className="w-full  px-4 mb-6">
-              <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
-   
-                    <div className="w-full px-3">
-                      <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                        Chart 1
-                      </p>
-                      <ExpenseAndBudgetChart />
-                    </div>
-         
+        <div className="w-full md:w-1/2 px-4 mb-6">
+          <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="flex-auto p-4">
+              <div className="flex flex-row -mx-3">
+                <div className="w-full px-3">
+                  <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                    Sum of Expense and budget
+                  </p>
+                  <ExpenseAndBudgetChart />
+                </div>
               </div>
             </div>
           </div>
+        </div>
+        <div className="w-full md:w-1/2 px-4 mb-6">
+          <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="flex-auto p-4">
+              <div className="flex flex-row -mx-3">
+                <div className="w-full px-3">
+                  <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                     Expenses 
+                  </p>
+                   <ExpensePieChart/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
           {/* end of chart */}
 
@@ -115,29 +133,34 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
                   {expenses?.map((expense, index) => (
-                    <div
-                      key={index}
-                      className="w-full sm:w-auto md:w-full lg:w-auto xl:w-auto bg-gray-50 border border-gray-200 rounded-lg p-4"
-                    >
-                      <div className="flex flex-col">
-                        <div className="flex justify-between mb-2">
-                          <p className="font-semibold">Name:</p>
-                          <p>{expense.description}</p>
-                        </div>
-                        <div className="flex justify-between mb-2">
-                          <p className="font-semibold">Amount:</p>
-                          <p>{currencyFormatter(expense.amount)}</p>
-                        </div>
-                        <div className="flex justify-between mb-2">
-                          <p className="font-semibold">Month&Year:</p>
-                          <p>{dateFormatter(expense.date)}</p>
-                        </div>
-                        <div className="flex justify-between">
-                          <p className="font-semibold">Budget Balance</p>
-                          <p>{currencyFormatter(0)}</p>
-                        </div>
-                      </div>
-                    </div>
+                   <div
+                    key={index}
+                   className="w-full sm:w-auto md:w-full lg:w-auto xl:w-auto bg-gray-800 border border-gray-700 rounded-lg p-4">
+                   <div className="flex flex-col">
+                     <div className="flex justify-between mb-2">
+                       <p className="font-semibold text-blue-300">Name:</p>
+                       <p className="text-white">{expense.description}</p>
+                     </div>
+                     <div className="flex justify-between mb-2">
+                       <p className="font-semibold text-green-300">Amount:</p>
+                       <p className="text-white">{currencyFormatter(expense.amount)}</p>
+                     </div>
+                     <div className="flex justify-between mb-2">
+                       <p className="font-semibold text-yellow-300">Month & Year:</p>
+                       <p className="text-white">{dateFormatter(expense.date)}</p>
+                     </div>
+                     <div className="flex justify-between">
+                       <p className="font-semibold text-purple-300">Budget Amount:</p>
+                       <p className="text-white">{currencyFormatter(expense.budgetAmount)}</p>
+                     </div>
+                     <div className="flex justify-between">
+                       <p className="font-semibold text-red-300">Budget Balance:</p>
+                       <p className="text-white">{currencyFormatter(expense.budgetBalance)}</p>
+                     </div>
+                   </div>
+                   </div>
+                 
+                 
                   ))}
                 </div>
               </div>

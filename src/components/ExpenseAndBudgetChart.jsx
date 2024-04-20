@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -12,6 +13,8 @@ import {
   BarController,
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
+import DataService from "@/lib/fetch";
+import prisma from "@/lib/prisma";
 
 const ExpenseAndBudgetChart = () => {
   ChartJS.register(
@@ -30,16 +33,15 @@ const ExpenseAndBudgetChart = () => {
 
   const [report, setReport] = useState([]);
   const [isPending,setTransition] =  useTransition()
- const   [labels,setLabel] = useState([])
+
 
   
   const  getReport = async () => {
     try {
-      const response = await DataService.getDataNoAuth(`/dasboard/api/?getReport=${true}`);
+      const {formattedExpenses} = await DataService.getDataNoAuth(`/dashboard/api/?getReport=${true}`);
 
-       setLabel(response.date)
-      setReport(response.expense);
-      
+      setReport(formattedExpenses);
+
     } catch (error) {
       console.log(error);
       toast.error(error);
@@ -51,26 +53,28 @@ const ExpenseAndBudgetChart = () => {
 
   },[])
 
-
-
+  const labels = report.map(entry => entry.date);
+  const expenses = report.map(entry => entry.expensesSum);
+  const budgets = report.map(entry => entry.budgetSum);
+  
   const data = {
-    labels,
-    datasets: [
-      {
-        type: "bar",
-        label: "Expense",
-        backgroundColor: "rgb(75, 192, 192)",
-        data: report,
-        borderColor: "white",
-        borderWidth: 2,
-      },
-      {
-        type: "bar",
-        label: "Budget",
-        backgroundColor: "rgb(53, 162, 235)",
-        data: report,
-      },
-    ],
+      labels,
+      datasets: [
+          {
+              type: "bar",
+              label: "Expense",
+              backgroundColor: "rgb(75, 192, 192)",
+              data: expenses,
+              borderColor: "white",
+              borderWidth: 2,
+          },
+          {
+              type: "bar",
+              label: "Budget",
+              backgroundColor: "rgb(53, 162, 235)",
+              data: budgets,
+          },
+      ],
   };
   return (
     <header className="flex">

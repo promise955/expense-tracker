@@ -5,19 +5,23 @@ import { useAppContext } from "@/context/context";
 import { createClient } from "@/utils/supabase/client";
 
 const NavBar = () => {
-  //   const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const { isUser } = useAppContext();
+  const [isLoggedIn, setLoggedIn] = useState(isUser);
+
+  useEffect(() => {
+    startTransition(async () => setLoggedIn(isUser));
+  }, [isUser]);
 
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    
   }
   return (
     <nav className="py-4 px-8 flex justify-between items-center lg:justify-end sm:justify-center">
       <div className="flex items-center">
-        {!isUser && (
+        {!isLoggedIn && !isPending && (
           <>
             <a href="/login" className="btn text-white font-medium mx-2">
               Login
@@ -27,10 +31,10 @@ const NavBar = () => {
             </a>
           </>
         )}
-        {isUser && (
+        {(isLoggedIn || isPending) && (
           <>
             <a href="" className="btn text-white font-medium mx-2">
-              {isUser}
+              {isPending ? "fetching user........" : isUser}
             </a>
             <Link href="/budget" className="btn text-white font-medium mx-2">
               Budget

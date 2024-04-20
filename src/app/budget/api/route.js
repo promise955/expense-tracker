@@ -1,9 +1,8 @@
+'use server'
 import { createClient } from "@/utils/supabase/server";
 import prisma from "@/lib/prisma";
 import { NextResponse } from 'next/server'
-
-
-
+import { readUserSession } from "@/lib/action";
 
 export async function DELETE(request) {
 
@@ -11,16 +10,14 @@ export async function DELETE(request) {
     try {
 
 
-        const url =  new URL(request.url)
+        const url = new URL(request.url)
 
         const searchParams = url.searchParams;
 
         const budgetId = searchParams.get('id');
         const userId = searchParams.get('user');
 
-
-        const supabase = createClient()
-        const { error, data: { user } } = await supabase.auth.getUser()
+        const { user, error } = await readUserSession()
 
         if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
 
@@ -40,8 +37,8 @@ export async function DELETE(request) {
         // })
         const budget = await prisma.budgetCategory.update({
             where: { deleted: false, userId: id, id: budgetId },
-            data : {
-                deleted : false
+            data: {
+                deleted: false
             }
 
         })
@@ -65,11 +62,9 @@ export async function PATCH(request) {
 
     try {
 
-
         const payload = await request.json()
 
-        const supabase = createClient()
-        const { error, data: { user } } = await supabase.auth.getUser()
+        const { user, error } = await readUserSession()
 
         if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
 
@@ -113,9 +108,7 @@ export async function GET() {
 
 
     try {
-
-        const supabase = createClient()
-        const { error, data: { user } } = await supabase.auth.getUser()
+        const { user, error } = await readUserSession()
 
         if (error) return new NextResponse(JSON.stringify({ message: error.message }), { status: 400 })
 
@@ -128,10 +121,11 @@ export async function GET() {
             }
         })
         if (!id) return new NextResponse(JSON.stringify({ message: "Invalid credentials or seesion expired" }), { status: 400 })
-
         const budgets = await prisma.budgetCategory.findMany({
             where: { deleted: false, userId: id },
-        })
+        
+        });
+
 
         return new Response(JSON.stringify({ message: budgets }), {
             headers: {
@@ -146,7 +140,6 @@ export async function GET() {
 
 
 }
-
 
 
 export async function POST(request) {

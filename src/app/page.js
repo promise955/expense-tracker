@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import NavBar from "@/components/Nav";
 import { useAppContext } from "@/context/context";
-import { readUserSession } from "@/lib/session";
+import { readUserSession } from "@/lib/action";
 import {  useTransition,useEffect } from "react";
 import { useRouter } from "next/navigation";
 

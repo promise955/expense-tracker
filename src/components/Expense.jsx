@@ -4,13 +4,14 @@ import * as Yup from "yup";
 import { NumericFormat } from "react-number-format";
 import ReactDatePicker from "react-datepicker";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import DataService from "@/lib/fetch";
-
+import { dateFormatter } from "@/utils/functions/utils";
 
 const Expense = ({ onClose }) => {
   const [budgets, setBudgets] = useState([]);
-  const [isPending,setTransition] =  useTransition()
+  const [load, setReload] = useState(false);
+  const [isPending, setTransition] = useTransition();
 
   const fetchBudets = async () => {
     try {
@@ -22,11 +23,9 @@ const Expense = ({ onClose }) => {
     }
   };
 
-  useEffect(()=> {
-      setTransition(async () => await fetchBudets())
-
-  },[])
-
+  useEffect(() => {
+    setTransition(async () => await fetchBudets());
+  }, []);
 
   const router = useRouter();
   const newExpense = {
@@ -55,7 +54,7 @@ const Expense = ({ onClose }) => {
       toast.success(response);
       onClose();
       setSubmitting(false);
-      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
       toast.error(error);
       setSubmitting(false);
@@ -162,13 +161,11 @@ const Expense = ({ onClose }) => {
 
               <div className="mb-4">
                 <label
-                  htmlFor="date"
+                  htmlFor="budget"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Select Budget
                 </label>
-                {/* 
-                <Form.Field> */}
                 <Field
                   as="select"
                   name="budget"
@@ -176,22 +173,38 @@ const Expense = ({ onClose }) => {
                   onChange={(value) => {
                     value.persist();
                     let item = value.target.value;
-
                     setFieldValue("budget", item);
                   }}
                   error={touched.budget && errors.budget}
-                  className="block w-full mt-1 px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className={`block w-full mt-1 px-3 py-2 border ${
+                    errors.date && touched.date
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+                  disabled={!values.date}
                 >
                   <option value="" disabled defaultValue hidden></option>
-
-                  {budgets?.map((item) => (
-
-                    <option key={item.id} value={item.id}>
-                      {item.categoryname}
-                    </option>
-                  ))}
+                  {values.date && budgets
+                    ? budgets
+                        .filter((item) => {
+                          const itemDate = new Date(item.monthyear);                  
+                          return (
+                            itemDate.getMonth() === values.date.getMonth()+1 &&
+                            itemDate.getFullYear() === values.date.getFullYear()
+                          );
+                        })
+                        .map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.categoryname}
+                          </option>
+                        ))
+                    : null}
                 </Field>
-                {/* </Form.Field> */}
+                {errors.date && touched.date && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Expense date must be selected first before budget category
+                  </p>
+                )}
                 <ErrorMessage
                   name="budget"
                   component="p"
@@ -204,17 +217,20 @@ const Expense = ({ onClose }) => {
                   type="button"
                   onClick={onClose}
                   className="mr-2 px-4 py-2 text-sm rounded-md bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  disabled={isPending ? isPending : isSubmitting }
+                  disabled={isPending ? isPending : isSubmitting}
                 >
-                    {isPending ? 'Close': isSubmitting ? "Close" : " Close"}
-               
+                  {isPending ? "Close" : isSubmitting ? "Close" : " Close"}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 text-sm rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={isPending ? isPending : isSubmitting }
+                  disabled={isPending ? isPending : isSubmitting}
                 >
-                  {isPending ? 'Please wait..': isSubmitting ? "submitting .." : " Save"}
+                  {isPending
+                    ? "Please wait.."
+                    : isSubmitting
+                    ? "submitting .."
+                    : " Save"}
                 </button>
               </div>
             </Form>
