@@ -35,24 +35,24 @@ export async function DELETE(request) {
         //     where: { deleted: false, userId: id, id: budgetId },
 
         // })
-        const budget = await prisma.budgetCategory.update({
+          await prisma.budgetCategory.update({
             where: { deleted: false, userId: id, id: budgetId },
             data: {
-                deleted: false
+                deleted: true
             }
 
         })
 
 
-        return new Response(JSON.stringify({ message: 'Update Sucessfully' }), {
+        return new Response(JSON.stringify({ message: 'Deleted Sucessfully' }), {
             headers: {
                 "Content-Type": "application/json"
             },
             status: 200
         })
     } catch (error) {
-        console.log(error);
-        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+     
+        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
     }
 
 
@@ -95,7 +95,7 @@ export async function PATCH(request) {
             status: 200
         })
     } catch (error) {
-        console.log(error);
+   
         return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
     }
 
@@ -123,9 +123,9 @@ export async function GET() {
         if (!id) return new NextResponse(JSON.stringify({ message: "Invalid credentials or seesion expired" }), { status: 400 })
         const budgets = await prisma.budgetCategory.findMany({
             where: { deleted: false, userId: id },
+            orderBy: { monthyear: 'asc' }
         
         });
-
 
         return new Response(JSON.stringify({ message: budgets }), {
             headers: {
@@ -134,8 +134,8 @@ export async function GET() {
             status: 200
         })
     } catch (error) {
-        console.log(error);
-        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+       
+        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
     }
 
 
@@ -150,7 +150,7 @@ export async function POST(request) {
         const payload = await request.json()
 
         const { error, data: { user } } = await supabase.auth.getUser()
-        console.log(error);
+        
 
         if (error) return new NextResponse(JSON.stringify({ message: "Invalid request" }), { status: 400 })
 
@@ -184,8 +184,8 @@ export async function POST(request) {
 
 
     } catch (error) {
-        console.log(error);
-        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+     
+        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
     }
 
 }

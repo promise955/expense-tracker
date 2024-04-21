@@ -1,28 +1,9 @@
 import { currencyFormatter, dateFormatter } from "@/utils/functions/utils";
 import React, { useState } from "react";
-import DeleteBudgetModal from "./DeleteBudgetModal";
-import EditBudgetModal from "./EditBudgetModal";
 
-const BudgetCard = ({ budget }) => {
-  const [selectedBudget, setSelectedBudget] = useState(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const openEditModal = (budget) => {
-    setSelectedBudget(budget);
-    setEditModalOpen(true);
-  };
-
-  const openDeleteModal = (budget) => {
-    setSelectedBudget(budget);
-    setDeleteModalOpen(true);
-  };
-
-  const closeModals = () => {
-    setEditModalOpen(false);
-    setDeleteModalOpen(false);
-  };
-
+const BudgetCard = ({ budget ,openDeleteModal,openEditModal}) => {
+ 
   return (
     <div>
       <div className="bg-gray-800 rounded-lg shadow-md p-4">
@@ -61,18 +42,9 @@ const BudgetCard = ({ budget }) => {
           </p>
         </div>
 
-        {/* <p className="text-lg font-semibold text-blue-300">Already spent </p>
-        <div className="mt-2 bg-gray-600 h-4 rounded-full overflow-hidden">
-          <div className="bg-blue-500 h-full w-1/2">{budget.amountSpent}</div>
-        </div> */}
       </div>
 
-      {deleteModalOpen && (
-        <DeleteBudgetModal budget={selectedBudget} onClose={closeModals} />
-      )}
-      {editModalOpen && (
-        <EditBudgetModal updatedBudget={selectedBudget} onClose={closeModals} />
-      )}
+ 
     </div>
   );
 };

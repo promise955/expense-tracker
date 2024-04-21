@@ -95,8 +95,8 @@ export async function GET(request, response) {
                 status: 200
             })
         } catch (error) {
-            console.log(error);
-            return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+    
+            return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
         }
 
 
@@ -120,7 +120,8 @@ export async function GET(request, response) {
                 where: { userId: id },
                 select: {
                     id: true,
-                    budgetamount: true
+                    budgetamount: true,
+                    categoryname:true
                 }
 
             })
@@ -141,6 +142,7 @@ export async function GET(request, response) {
                 const budgetCategory = allUserBudget.find(item => item.id === expense.budgetCategoryId);
                 expense.budgetBalance = budgetCategory ? budgetCategory.budgetamount - expense.amount : 0;
                 expense.budgetAmount = budgetCategory ? budgetCategory.budgetamount : 0;
+                expense.budgetName  = budgetCategory ? budgetCategory.categoryname : null
 
                 return expense
 
@@ -154,8 +156,8 @@ export async function GET(request, response) {
                 status: 200
             })
         } catch (error) {
-            console.log(error, 'error');
-            return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+      
+            return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
         }
 
 

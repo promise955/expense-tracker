@@ -4,13 +4,13 @@ import * as Yup from "yup";
 import { NumericFormat } from "react-number-format";
 import ReactDatePicker from "react-datepicker";
 import { toast } from "sonner";
-import { useRouter, redirect } from "next/navigation";
 import DataService from "@/lib/fetch";
-import { dateFormatter } from "@/utils/functions/utils";
+import dayjs from "dayjs";
+
+
 
 const Expense = ({ onClose }) => {
   const [budgets, setBudgets] = useState([]);
-  const [load, setReload] = useState(false);
   const [isPending, setTransition] = useTransition();
 
   const fetchBudets = async () => {
@@ -27,7 +27,6 @@ const Expense = ({ onClose }) => {
     setTransition(async () => await fetchBudets());
   }, []);
 
-  const router = useRouter();
   const newExpense = {
     description: null,
     amount: null,
@@ -47,14 +46,16 @@ const Expense = ({ onClose }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
+
+
       const response = await DataService.postDataNoAuth(
         "/dashboard/api",
-        values
+        {...values,monthyear :  dayjs(values.date).format('YYYY-MM-DD HH:mm:ss')}
       );
       toast.success(response);
       onClose();
       setSubmitting(false);
-      router.refresh();
+   
     } catch (error) {
       toast.error(error);
       setSubmitting(false);
@@ -62,7 +63,7 @@ const Expense = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex  text-gray-800 justify-center items-center">
       <div className="bg-white rounded-lg shadow-md p-8 w-4/5 max-w-md">
         <h2 className="text-lg font-semibold mb-4">Add Expense</h2>
         <Formik

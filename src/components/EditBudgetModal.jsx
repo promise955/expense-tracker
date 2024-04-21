@@ -5,13 +5,13 @@ import { NumericFormat } from "react-number-format";
 import ReactDatePicker from "react-datepicker";
 import DataService from "@/lib/fetch";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
 import { dateFormatter } from "@/utils/functions/utils";
+import dayjs from "dayjs";
+
 
 
 const EditBudgetModal = ({ updatedBudget, onClose }) => {
-  const router = useRouter();
+
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
@@ -19,21 +19,22 @@ const EditBudgetModal = ({ updatedBudget, onClose }) => {
       if (updatedBudget) {
         const response = await DataService.patchDataNoAuth(
           "/budget/api",
-          values
+          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD HH:mm:ss')}
         );
         toast.success(response);
         setSubmitting(false);
         onClose();
-        router.refresh();
+      
       } else {
+
         const response = await DataService.postDataNoAuth(
           "/budget/api",
-          values
+          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD HH:mm:ss')}
         );
         toast.success(response);
         setSubmitting(false);
         onClose();
-        router.refresh();
+  
       }
     } catch (error) {
       toast.error(error);
@@ -56,7 +57,7 @@ const EditBudgetModal = ({ updatedBudget, onClose }) => {
   });
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 text-gray-800 flex justify-center items-center">
       <div className="bg-white rounded-lg shadow-md p-8 w-4/5 max-w-md">
         <h2 className="text-lg font-semibold mb-4">Budget Category</h2>
         <Formik
@@ -140,8 +141,10 @@ const EditBudgetModal = ({ updatedBudget, onClose }) => {
                           ? "border-red-500"
                           : ""
                       }`}
+                      value={values.monthyear ? dayjs(values.monthyear).format('MMMM YYYY') : ''}
                       selected={values.monthyear}
                       onChange={(value) => {
+                
                         setFieldValue("monthyear", value);
                       }}
                     />

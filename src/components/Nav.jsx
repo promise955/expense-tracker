@@ -1,10 +1,9 @@
 "use client";
-import React, { useEffect, useState, useTransition } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useTransition} from "react";
 import { useAppContext } from "@/context/context";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-
+import { useRouter} from "next/navigation";
+import { toast } from "sonner";
 
 const NavBar = () => {
   const [isPending, startTransition] = useTransition();
@@ -12,10 +11,18 @@ const NavBar = () => {
   const router = useRouter();
   const { isUser } = useAppContext();
   const [isLoggedIn, setLoggedIn] = useState(isUser);
+  const [loggedOut, setLoggedOut] = useState(false);
 
   useEffect(() => {
     startTransition(async () => setLoggedIn(isUser));
-  }, [isUser]);
+
+    if (loggedOut === true) {
+      router.refresh();
+      router.replace("/login");
+      
+      
+    }
+  }, [isUser, loggedOut]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -24,21 +31,23 @@ const NavBar = () => {
   };
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    alert('ji')
-    router.refresh("/login");
-    alert('no work')
-    router.replace('/')
-    alert('two no work')
-    router.prefetch('/')
+    const confirmed = confirm("Are you sure you want to log out?");
+
+    try {
+      if (confirmed) {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        setLoggedOut(true);
+      }
+    } catch (error) {
+      toast.error("log out failed try again");
+    }
   };
 
   return (
-
     <nav className="flex items-center justify-between flex-wrap bg-gray-800 p-6">
       <div className="flex items-center flex-shrink-0 text-white mr-6">
-      {/* <Image
+        {/* <Image
           src="/expense.svg"
           alt="Login"
           className="h-50 mx-auto mb-8"
@@ -70,7 +79,7 @@ const NavBar = () => {
           isOpen ? "block" : "hidden"
         } w-full flex-grow lg:flex lg:items-center lg:w-auto`}
       >
-        {(isLoggedIn || isPending) && (
+        {isLoggedIn && (
           <>
             <div className="text-sm lg:flex-grow">
               <a
@@ -89,29 +98,32 @@ const NavBar = () => {
             <div>
               <a
                 href="#"
-                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-500 hover:bg-white mt-4 lg:mt-0"
+                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-500 mt-4 lg:mt-0"
               >
-                {isPending ? "fetching user........" : isUser}
+                {isUser}
               </a>
             </div>
             <div className="lg:ml-6">
-              <a
-                href="#"
+              <button
                 onClick={() => handleLogout()}
-                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white t hover:bg-white mt-4 lg:mt-0"
+                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white mt-4 lg:mt-0"
               >
                 Logout
-              </a>
+              </button>
             </div>
           </>
         )}
 
-        {!isLoggedIn && !isPending && (
-          <>
+        {!isLoggedIn && (
+          <div
+            className={`${
+              !isPending ? "block" : "hidden"
+            } lg:flex lg:w-full lg:flex-wrap lg:justify-end`}
+          >
             <div>
               <a
                 href="/login"
-                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-500 hover:bg-white mt-4 lg:mt-0"
+                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-50 mt-4 lg:mt-0"
               >
                 Login
               </a>
@@ -119,12 +131,12 @@ const NavBar = () => {
             <div className="lg:ml-6">
               <a
                 href="/register"
-                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white t hover:bg-white mt-4 lg:mt-0"
+                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white  mt-4 lg:mt-0"
               >
                 Register
               </a>
             </div>
-          </>
+          </div>
         )}
       </div>
     </nav>

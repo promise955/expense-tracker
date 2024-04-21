@@ -16,28 +16,23 @@ export default function Home() {
   useEffect(() => {
     const getUserAndRedirect = async () => {
       if (!isUser) {
-        const { user } = await readUserSession();
-        if (user) {
+        try {
+          const { user } = await readUserSession();
           setUser(user.email);
-
-          router.push('/dashboard')
-        } else {
-
-          router.push('/login');
+          router.push("/dashboard");
+        } catch (error) {
+          router.replace("/");
         }
       }
     };
 
     getUserAndRedirect();
   }, [isUser, setUser, router]);
-
   return (
     <>
 
       <NavBar />
       <main className="min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
-
-
         <Header />
         |<Footer />
       </main>

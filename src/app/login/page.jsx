@@ -31,7 +31,8 @@ const Login = () => {
       setUser(email);
 ;
       router.push("/dashboard");
-      setSubmitting(false);
+      setInterval(() => setSubmitting(false),3000)
+     
     } catch (error) {
       setSubmitting(false);
 
