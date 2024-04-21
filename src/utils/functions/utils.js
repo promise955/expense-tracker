@@ -11,8 +11,8 @@ export const currencyFormatter = (amount) => {
 
 export const dateFormatter = (datetime) => {
 
-  const newDate = new Date(datetime);
-  //let date = newDate.split('T')[0];
+  let date = datetime.split('T')[0];
+  const newDate = new Date(date);
   const formattedDate = newDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return formattedDate

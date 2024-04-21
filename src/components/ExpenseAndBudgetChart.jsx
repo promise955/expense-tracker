@@ -77,7 +77,7 @@ const ExpenseAndBudgetChart = () => {
       ],
   };
   return (
-    <header className="flex justify-center items-center h-80 mb-4">
+    <header className="flex justify-center items-center h-full ">
   
       <div className="relative w-full h-full">
         <Chart type="bar" data={data} />

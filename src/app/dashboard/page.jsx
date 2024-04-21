@@ -144,6 +144,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="w-full md:w-1/2 px-4 mb-6">
+
                 <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                   <div className="flex-auto p-4">
                     <div className="flex flex-row -mx-3">
@@ -151,7 +152,6 @@ const Dashboard = () => {
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
                           Sum of Expense and budget
                         </p>
-
                         <ExpenseAndBudgetChart />
                       </div>
                     </div>
@@ -163,7 +163,7 @@ const Dashboard = () => {
             {/* end of chart */}
 
             {/* expense list */}
-            <div className="flex flex-wrap">
+            <div className="flex flex-wrap -mx-4">
               <div className="w-full p-4">
                 <div className="bg-white shadow-soft-xl rounded-2xl p-4 relative">
                   <button

@@ -7,8 +7,6 @@ import { toast } from "sonner";
 import DataService from "@/lib/fetch";
 import dayjs from "dayjs";
 
-
-
 const Expense = ({ onClose }) => {
   const [budgets, setBudgets] = useState([]);
   const [isPending, setTransition] = useTransition();
@@ -46,16 +44,23 @@ const Expense = ({ onClose }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true);
     try {
+      const budget = budgets.find((a) => a.id === values.budget);
 
+      const itemDate = new Date(budget.monthyear);
+      if (
+        itemDate.getMonth() !== values.date.getMonth() &&
+        itemDate.getFullYear() === values.date.getFullYear()
+      ) {
+        return toast.error("Conflicting date selected");
+      }
 
-      const response = await DataService.postDataNoAuth(
-        "/dashboard/api",
-        {...values,monthyear :  dayjs(values.date).format('YYYY-MM-DD HH:mm:ss')}
-      );
+      const response = await DataService.postDataNoAuth("/dashboard/api", {
+        ...values,
+        monthyear: dayjs(values.date).format("YYYY-MM-DD HH:mm:ss"),
+      });
       toast.success(response);
       onClose();
       setSubmitting(false);
-   
     } catch (error) {
       toast.error(error);
       setSubmitting(false);
@@ -149,6 +154,7 @@ const Expense = ({ onClose }) => {
                       selected={values.date}
                       onChange={(value) => {
                         setFieldValue("date", value);
+                        setFieldValue("budget", null);
                       }}
                     />
                   )}
@@ -188,7 +194,7 @@ const Expense = ({ onClose }) => {
                   {values.date && budgets
                     ? budgets
                         .filter((item) => {
-                          const itemDate = new Date(item.monthyear);                  
+                          const itemDate = new Date(item.monthyear);
                           return (
                             itemDate.getMonth() === values.date.getMonth() &&
                             itemDate.getFullYear() === values.date.getFullYear()
@@ -201,11 +207,23 @@ const Expense = ({ onClose }) => {
                         ))
                     : null}
                 </Field>
-                {errors.date && touched.date && (
+                {!values.date && (
                   <p className="text-red-500 text-sm mt-1">
                     Expense date must be selected first before budget category
                   </p>
                 )}
+                {values.date &&
+                  budgets.filter((item) => {
+                    const itemDate = new Date(item.monthyear);
+                    return (
+                      itemDate.getMonth() === values.date.getMonth() &&
+                      itemDate.getFullYear() === values.date.getFullYear()
+                    );
+                  }).length == 0 && (
+                    <p className="text-red-500 text-sm mt-1">
+                      No record found! create budget category first
+                    </p>
+                  )}
                 <ErrorMessage
                   name="budget"
                   component="p"
