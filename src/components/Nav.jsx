@@ -33,6 +33,7 @@ const NavBar = ({ isUser }) => {
         const supabase = createClient();
         await supabase.auth.signOut();
         setLoggedOut(true);
+        Cookies.remove('expense-user');
       }
     } catch (error) {
       toast.error("log out failed try again");
