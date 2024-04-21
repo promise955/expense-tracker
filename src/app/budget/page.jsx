@@ -10,6 +10,7 @@ import { useAppContext } from "@/context/context";
 import DataService from "@/lib/fetch";
 import { readUserSession } from "@/lib/action";
 import DeleteBudgetModal from "@/components/DeleteBudgetModal";
+import Cookies from "js-cookie";
 
 const BudgetCategory = () => {
   const router = useRouter();
@@ -38,6 +39,7 @@ const BudgetCategory = () => {
 
   const fetchBudgets = async () => {
     try {
+      setLoading(true)
       const budgets = await DataService.getDataNoAuth("/budget/api");
       setBudgets(budgets);
       setLoading(false);
@@ -58,7 +60,8 @@ const BudgetCategory = () => {
       if (!isUser) {
         try {
           const { user } = await readUserSession();
-          setUser(user.email);
+          //setUser(user.email);
+          Cookies.set('expense-user',user.email, { expires: 7 });
           router.prefetch("/budget");
         } catch (error) {
           router.replace("/login");
@@ -67,11 +70,11 @@ const BudgetCategory = () => {
     };
 
     getUserAndRedirect();
-  }, [isUser, setUser, router]);
+  }, [isUser,router]);
 
   return (
     <>
-      <NavBar />
+      <NavBar  isUser={Cookies.get('expense-user')}/>
       <div className="w-full px-6 py-6 mx-auto min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
         <div className="flex justify-start">
           <div className="w-full">

@@ -11,6 +11,9 @@ import ExpenseAndBudgetChart from "@/components/ExpenseAndBudgetChart";
 import { toast } from "sonner";
 import DataService from "@/lib/fetch";
 import ExpensePieChart from "@/components/ExpensePiechart";
+import Cookies from "js-cookie";
+import Image from "next/image";
+
 
 const Dashboard = () => {
   const router = useRouter();
@@ -18,6 +21,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [expenseModal, setExpenseModal] = useState(false);
   const [expenses, setExpenses] = useState([]);
+
+  
   const fetchExpenses = async () => {
     try {
       setLoading(true);
@@ -38,11 +43,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getUserAndRedirect = async () => {
+      setLoading(true);
       if (!isUser) {
         try {
           const { user } = await readUserSession();
-          setUser(user.email);
-          router.prefetch("/dashboard");
+          // setUser(user.email);
+          Cookies.set("expense-user", user.email, { expires: 7 });
+          // router.prefetch("/dashboard");
+          setLoading(false);
         } catch (error) {
           router.replace("/login");
         }
@@ -50,12 +58,27 @@ const Dashboard = () => {
     };
 
     getUserAndRedirect();
-  }, [isUser, setUser, router]);
+  }, [isUser, router]);
 
   return (
     <>
-      <NavBar />
-      <main className="min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
+      <NavBar isUser={Cookies.get("expense-user")} />
+      <div className="w-full px-6 py-6 mx-auto min-h-screen flex flex-col bg-gradient-to-r from-purple-600 to-indigo-600">
+        <div className="flex justify-start">
+          <div className="w-full">
+            <div className="flex justify-between mb-8">
+              <h5 className="text-2xl font-semibold text-white">
+                Your Expense
+              </h5>
+              <button
+                className="bg-purple-600 hover:bg-black-500 text-white font-semibold px-4 py-2 rounded-lg"
+                onClick={() => setExpenseModal(true)}
+              >
+                Create Expense
+              </button>
+            </div>
+          </div>
+        </div>
         {loading ? (
           <div className="flex flex-col items-center justify-center flex-grow">
             <div className="flex flex-col items-center justify-center flex-grow">
@@ -82,7 +105,25 @@ const Dashboard = () => {
               <p className="text-white text-4xl font-bold">Loading...</p>
             </div>
           </div>
-        ) : (
+        ) : expenses.length === 0 ? (
+          <header className="flex flex-col items-center justify-center flex-grow">
+            <div className="w-2/3 text-center">
+              <h1 className="text-white text-4xl font-bold mb-4">
+                No Record Found
+              </h1>
+            </div>
+            <div className="relative w-2/3 h-80">
+              <Image
+                src={`/expense.svg`}
+                alt="Expense Tracker"
+                layout="fill"
+                objectFit="contain"
+              />
+            </div>
+          </header>
+        ) :
+
+        (
           <div>
             {/* start of chart */}
 
@@ -93,9 +134,9 @@ const Dashboard = () => {
                     <div className="flex flex-row -mx-3">
                       <div className="w-full px-3">
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                        Expenses
+                          Expenses
                         </p>
-                     
+
                         <ExpensePieChart />
                       </div>
                     </div>
@@ -108,10 +149,9 @@ const Dashboard = () => {
                     <div className="flex flex-row -mx-3">
                       <div className="w-full px-3">
                         <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                          
                           Sum of Expense and budget
                         </p>
-                    
+
                         <ExpenseAndBudgetChart />
                       </div>
                     </div>
@@ -165,9 +205,7 @@ const Dashboard = () => {
                             <p className="font-semibold text-teal-300">
                               Budget Category:
                             </p>
-                            <p className="text-white">
-                              {expense.budgetName}
-                            </p>
+                            <p className="text-white">{expense.budgetName}</p>
                           </div>
                           <div className="flex justify-between mb-2">
                             <p className="font-semibold text-purple-300">
@@ -198,7 +236,7 @@ const Dashboard = () => {
             {/* end of expense list */}
           </div>
         )}
-      </main>
+      </div>
     </>
   );
 };

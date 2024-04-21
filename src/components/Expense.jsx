@@ -190,7 +190,7 @@ const Expense = ({ onClose }) => {
                         .filter((item) => {
                           const itemDate = new Date(item.monthyear);                  
                           return (
-                            itemDate.getMonth() === values.date.getMonth()+1 &&
+                            itemDate.getMonth() === values.date.getMonth() &&
                             itemDate.getFullYear() === values.date.getFullYear()
                           );
                         })

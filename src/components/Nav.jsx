@@ -1,28 +1,23 @@
 "use client";
-import React, { useEffect, useState, useTransition} from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { useAppContext } from "@/context/context";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 
-const NavBar = () => {
+const NavBar = ({ isUser }) => {
   const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
-  const { isUser } = useAppContext();
-  const [isLoggedIn, setLoggedIn] = useState(isUser);
   const [loggedOut, setLoggedOut] = useState(false);
 
   useEffect(() => {
-    startTransition(async () => setLoggedIn(isUser));
-
     if (loggedOut === true) {
       router.refresh();
       router.replace("/login");
-      
-      
     }
-  }, [isUser, loggedOut]);
+  }, [loggedOut,router]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -79,7 +74,7 @@ const NavBar = () => {
           isOpen ? "block" : "hidden"
         } w-full flex-grow lg:flex lg:items-center lg:w-auto`}
       >
-        {isLoggedIn && (
+        {isUser && (
           <>
             <div className="text-sm lg:flex-grow">
               <a
@@ -114,11 +109,9 @@ const NavBar = () => {
           </>
         )}
 
-        {!isLoggedIn && (
+        {!isUser && (
           <div
-            className={`${
-              !isPending ? "block" : "hidden"
-            } lg:flex lg:w-full lg:flex-wrap lg:justify-end`}
+            className={`lg:flex lg:w-full lg:flex-wrap lg:justify-end`}
           >
             <div>
               <a
