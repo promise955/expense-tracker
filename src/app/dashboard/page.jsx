@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [expenseModal, setExpenseModal] = useState(false);
   const [expenses, setExpenses] = useState([]);
 
-  
+
   const fetchExpenses = async () => {
     try {
       setLoading(true);
@@ -231,11 +231,11 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {expenseModal && <Expense onClose={() => setExpenseModal(false)} />}
 
             {/* end of expense list */}
           </div>
         )}
+        {expenseModal && <Expense onClose={() => setExpenseModal(false)} />}
       </div>
     </>
   );
