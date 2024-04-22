@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Cookies from "js-cookie";
 
 const NavBar = ({ isUser }) => {
+
   const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
@@ -14,9 +15,10 @@ const NavBar = ({ isUser }) => {
 
   useEffect(() => {
     if (loggedOut === true) {
-      router.refresh();
       router.replace("/login");
+      router.refresh();
     }
+   
   }, [loggedOut,router]);
 
   const [isOpen, setIsOpen] = useState(false);

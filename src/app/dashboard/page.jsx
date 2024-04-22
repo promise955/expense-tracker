@@ -14,14 +14,12 @@ import ExpensePieChart from "@/components/ExpensePiechart";
 import Cookies from "js-cookie";
 import Image from "next/image";
 
-
 const Dashboard = () => {
   const router = useRouter();
   const { isUser, setUser } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [expenseModal, setExpenseModal] = useState(false);
   const [expenses, setExpenses] = useState([]);
-
 
   const fetchExpenses = async () => {
     try {
@@ -49,11 +47,13 @@ const Dashboard = () => {
           const { user } = await readUserSession();
           // setUser(user.email);
           Cookies.set("expense-user", user.email, { expires: 7 });
-          // router.prefetch("/dashboard");
+
           setLoading(false);
         } catch (error) {
           router.replace("/login");
         }
+      } else if (isUser) {
+        location.reload();
       }
     };
 
@@ -121,9 +121,7 @@ const Dashboard = () => {
               />
             </div>
           </header>
-        ) :
-
-        (
+        ) : (
           <div>
             {/* start of chart */}
 
@@ -144,7 +142,6 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="w-full md:w-1/2 px-4 mb-6">
-
                 <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
                   <div className="flex-auto p-4">
                     <div className="flex flex-row -mx-3">
@@ -230,7 +227,6 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
 
             {/* end of expense list */}
           </div>
