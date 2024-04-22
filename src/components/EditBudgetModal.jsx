@@ -18,7 +18,7 @@ const EditBudgetModal = ({ updatedBudget, onClose }) => {
       if (updatedBudget) {
         const response = await DataService.patchDataNoAuth(
           "/budget/api",
-          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD HH:mm:ss')}
+          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD')}
         );
         toast.success(response);
         setSubmitting(false);
@@ -28,7 +28,7 @@ const EditBudgetModal = ({ updatedBudget, onClose }) => {
 
         const response = await DataService.postDataNoAuth(
           "/budget/api",
-          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD HH:mm:ss')}
+          {...values,monthyear :  dayjs(values.monthyear).format('YYYY-MM-DD')}
         );
         toast.success(response);
         setSubmitting(false);

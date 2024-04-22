@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import DataService from "@/lib/fetch";
 import dayjs from "dayjs";
 
+
 const Expense = ({ onClose }) => {
   const [budgets, setBudgets] = useState([]);
   const [isPending, setTransition] = useTransition();
@@ -56,7 +57,7 @@ const Expense = ({ onClose }) => {
 
       const response = await DataService.postDataNoAuth("/dashboard/api", {
         ...values,
-        monthyear: dayjs(values.date).format("YYYY-MM-DD HH:mm:ss"),
+        date: dayjs(values.date).format('YYYY-MM-DD')
       });
       toast.success(response);
       onClose();

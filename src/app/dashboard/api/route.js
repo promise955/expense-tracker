@@ -95,7 +95,7 @@ export async function GET(request, response) {
                 status: 200
             })
         } catch (error) {
-    
+
             return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
         }
 
@@ -156,7 +156,7 @@ export async function GET(request, response) {
                 status: 200
             })
         } catch (error) {
-      
+
             return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
         }
 
@@ -191,7 +191,7 @@ export async function POST(request) {
 
         await prisma.expense.create({
             data: {
-                date: payload.date,
+                date:new Date(payload.date) ,
                 description: payload.description,
                 amount: Number(payload.amount),
                 budgetCategoryId: payload.budget
@@ -209,7 +209,7 @@ export async function POST(request) {
 
     } catch (error) {
         console.log(error);
-        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 400 })
+        return new NextResponse(JSON.stringify({ message: 'something went wrong' }), { status: 500 })
     }
 
 }
